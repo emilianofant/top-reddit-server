@@ -23,21 +23,9 @@ COPY go.sum ./
 # Download all dependencies.
 RUN go mod download
 
+RUN go get github.com/githubnemo/CompileDaemon
+
 # Now, copy the source code
 COPY . .
 
-# Note here: CGO_ENABLED is disabled for cross system compilation
-# It is also a common best practise.
-
-# Build the application.
-RUN CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -o ./bin/main .
-
-# Finally our multi-stage to build a small image
-# Start a new stage from scratch
-FROM scratch
-
-# Copy the Pre-built binary file
-COPY --from=builder /app/bin/main .
-
-# Run executable
-CMD ["./main"]
+ENTRYPOINT CompileDaemon --build="go build -o ./bin/main ." --command="./bin/main"
