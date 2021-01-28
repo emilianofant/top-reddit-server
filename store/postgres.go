@@ -69,7 +69,6 @@ func (p *pg) Create(ctx context.Context, in *objects.CreateRequest) error {
 	if in.Post == nil {
 		return errors.ErrObjectIsRequired
 	}
-	in.Post.ID = GenerateUniqueID()
 	return p.db.WithContext(ctx).
 		Create(in.Post).
 		Error
@@ -82,7 +81,7 @@ func (p *pg) UpdateViewed(ctx context.Context, in *objects.UpdateRequest) error 
 		// not found
 		return errors.ErrPostNotFound
 	}
-	post.Viewed = !post.Viewed
+	post.Viewed = true
 	// post := &objects.Post{
 	// 	ID:     in.ID,
 	// 	Viewed: in.Viewed,

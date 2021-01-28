@@ -2,7 +2,7 @@ package objects
 
 // Post entity
 type Post struct {
-	ID               string  `gorm:"primary_key" json:"id,omitempty"`
+	ID               string  `json:"id,omitempty"`
 	Title            string  `json:"title,omitempty"`
 	Author           string  `json:"author,omitempty"`
 	EntryDate        float64 `json:"created_utc,omitempty"`

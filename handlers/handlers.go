@@ -70,7 +70,7 @@ func (h *handler) RedditList(w http.ResponseWriter, r *http.Request) {
 		Timeout: time.Second * 10,
 	}
 
-	req, err := http.NewRequest("GET", "https://www.reddit.com/r/redditdev/top.json", nil)
+	req, err := http.NewRequest("GET", "https://www.reddit.com/r/gaming/top.json", nil)
 	req.Header.Set("User-Agent", "reddit-top/1.0")
 
 	res, err := httpClient.Do(req)
@@ -128,6 +128,7 @@ func (h *handler) Create(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h *handler) UpdateViewed(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Access-Control-Allow-Origin", "*")
 	data, err := ioutil.ReadAll(r.Body)
 	if err != nil {
 		WriteError(w, errors.ErrUnprocessableEntity)
