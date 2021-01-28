@@ -24,6 +24,11 @@ type CreateRequest struct {
 	Post *Post `json:"post"`
 }
 
+// UpdateRequest for retrieving single Post
+type UpdateRequest struct {
+	ID string `json:"id"`
+}
+
 // DeleteRequest to delete a Post
 type DeleteRequest struct {
 	ID string `json:"id"`

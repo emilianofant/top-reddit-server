@@ -69,27 +69,28 @@ func (p *pg) Create(ctx context.Context, in *objects.CreateRequest) error {
 	if in.Post == nil {
 		return errors.ErrObjectIsRequired
 	}
-	in.Post.ID = GenerateUniqueID()
 	return p.db.WithContext(ctx).
 		Create(in.Post).
 		Error
 }
 
-// func (p *pg) UpdateDetails(ctx context.Context, in *objects.UpdateDetailsRequest) error {
-// 	post := &objects.Post{
-// 		ID:          in.ID,
-// 		title:        in.title,
-// 		Description: in.Description,
-// 		Website:     in.Website,
-// 		Address:     in.Address,
-// 		PhoneNumber: in.PhoneNumber,
-// 		UpdatedOn:   p.db.NowFunc(),
-// 	}
-// 	return p.db.WithContext(ctx).Model(post).
-// 		Select("name", "description", "website", "address", "phone_number", "updated_on").
-// 		Updates(post).
-// 		Error
-// }
+func (p *pg) UpdateViewed(ctx context.Context, in *objects.UpdateRequest) error {
+	post := &objects.Post{}
+	err := p.db.WithContext(ctx).Take(post, "id = ?", in.ID).Error
+	if err == gorm.ErrRecordNotFound {
+		// not found
+		return errors.ErrPostNotFound
+	}
+	post.Viewed = true
+	// post := &objects.Post{
+	// 	ID:     in.ID,
+	// 	Viewed: in.Viewed,
+	// }
+	return p.db.WithContext(ctx).Model(post).
+		Select("Viewed").
+		Updates(post).
+		Error
+}
 
 func (p *pg) Delete(ctx context.Context, in *objects.DeleteRequest) error {
 	post := &objects.Post{ID: in.ID}

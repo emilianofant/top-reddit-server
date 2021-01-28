@@ -16,7 +16,7 @@ type IPostHandler interface {
 	RedditList(w http.ResponseWriter, r *http.Request)
 	List(w http.ResponseWriter, r *http.Request)
 	Create(w http.ResponseWriter, r *http.Request)
-	// UpdateDetails(w http.ResponseWriter, r *http.Request)
+	UpdateViewed(w http.ResponseWriter, r *http.Request)
 	Delete(w http.ResponseWriter, r *http.Request)
 }
 
@@ -70,7 +70,7 @@ func (h *handler) RedditList(w http.ResponseWriter, r *http.Request) {
 		Timeout: time.Second * 10,
 	}
 
-	req, err := http.NewRequest("GET", "https://www.reddit.com/r/redditdev/top.json", nil)
+	req, err := http.NewRequest("GET", "https://www.reddit.com/r/gaming/top.json", nil)
 	req.Header.Set("User-Agent", "reddit-top/1.0")
 
 	res, err := httpClient.Do(req)
@@ -127,29 +127,30 @@ func (h *handler) Create(w http.ResponseWriter, r *http.Request) {
 	WriteResponse(w, &objects.PostResponseWrapper{Post: post})
 }
 
-// func (h *handler) UpdateDetails(w http.ResponseWriter, r *http.Request) {
-// 	data, err := ioutil.ReadAll(r.Body)
-// 	if err != nil {
-// 		WriteError(w, errors.ErrUnprocessableEntity)
-// 		return
-// 	}
-// 	req := &objects.UpdateDetailsRequest{}
-// 	if Unmarshal(w, data, req) != nil {
-// 		return
-// 	}
+func (h *handler) UpdateViewed(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Access-Control-Allow-Origin", "*")
+	data, err := ioutil.ReadAll(r.Body)
+	if err != nil {
+		WriteError(w, errors.ErrUnprocessableEntity)
+		return
+	}
+	req := &objects.UpdateRequest{}
+	if Unmarshal(w, data, req) != nil {
+		return
+	}
 
-// 	// check if Post exist
-// 	if _, err := h.store.Get(r.Context(), &objects.GetRequest{Id: req.Id}); err != nil {
-// 		WriteError(w, err)
-// 		return
-// 	}
+	// check if Post exist
+	if _, err := h.store.Get(r.Context(), &objects.GetRequest{ID: req.ID}); err != nil {
+		WriteError(w, err)
+		return
+	}
 
-// 	if err = h.store.UpdateDetails(r.Context(), req); err != nil {
-// 		WriteError(w, err)
-// 		return
-// 	}
-// 	WriteResponse(w, &objects.PostResponseWrapper{})
-// }
+	if err = h.store.UpdateViewed(r.Context(), req); err != nil {
+		WriteError(w, err)
+		return
+	}
+	WriteResponse(w, &objects.PostResponseWrapper{})
+}
 
 func (h *handler) Delete(w http.ResponseWriter, r *http.Request) {
 	id := r.URL.Query().Get("id")
