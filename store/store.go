@@ -13,6 +13,7 @@ type IPostStore interface {
 	Get(ctx context.Context, in *objects.GetRequest) (*objects.Post, error)
 	List(ctx context.Context, in *objects.ListRequest) ([]*objects.Post, error)
 	Create(ctx context.Context, in *objects.CreateRequest) error
+	UpdateViewed(ctx context.Context, in *objects.UpdateRequest) error
 	Delete(ctx context.Context, in *objects.DeleteRequest) error
 }
 

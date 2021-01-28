@@ -55,7 +55,7 @@ func RegisterAllRoutes(router *mux.Router, hnd handlers.IPostHandler) {
 	router.HandleFunc("/post", hnd.Delete).Methods(http.MethodDelete)
 
 	// update post details
-	// router.HandleFunc("/post/details", hnd.UpdateDetails).Methods(http.MethodPut)
+	router.HandleFunc("/post/viewed", hnd.UpdateViewed).Methods(http.MethodPut)
 
 	// list posts
 	router.HandleFunc("/posts", hnd.List).Methods(http.MethodGet)

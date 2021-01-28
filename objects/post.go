@@ -9,5 +9,5 @@ type Post struct {
 	Thumbnail        string  `json:"thumbnail"`
 	PostURL          string  `json:"permalink,omitempty"`
 	NumberOfComments int     `json:"num_comments,omitempty"`
-	Status           bool    `json:"status"`
+	Viewed           bool    `json:"viewed"`
 }
