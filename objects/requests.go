@@ -17,8 +17,6 @@ type GetRequest struct {
 type ListRequest struct {
 	Limit int    `json:"limit"`
 	After string `json:"after"`
-	// optional name matching
-	Name string `json:"name"`
 }
 
 // CreateRequest for creating a new Fav Post

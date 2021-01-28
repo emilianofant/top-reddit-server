@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
-	"time"
 )
 
 var (
@@ -38,20 +37,10 @@ var (
 		Code:    http.StatusBadRequest,
 		Message: "A valid Post id is required",
 	}
-	// ErrPostTimingIsRequired HTTP 400
-	ErrPostTimingIsRequired = &Error{
-		Code:    http.StatusBadRequest,
-		Message: "Post start time and end time should be provided",
-	}
 	// ErrInvalidLimit HTTP 400
 	ErrInvalidLimit = &Error{
 		Code:    http.StatusBadRequest,
 		Message: "Limit should be an integral value",
-	}
-	// ErrInvalidTimeFormat HTTP 400
-	ErrInvalidTimeFormat = &Error{
-		Code:    http.StatusBadRequest,
-		Message: "Time Should be passed in RFC3339 Format: " + time.RFC3339,
 	}
 )
 

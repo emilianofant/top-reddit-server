@@ -59,4 +59,7 @@ func RegisterAllRoutes(router *mux.Router, hnd handlers.IPostHandler) {
 
 	// list posts
 	router.HandleFunc("/posts", hnd.List).Methods(http.MethodGet)
+
+	// list Reddit top posts
+	router.HandleFunc("/reddit", hnd.RedditList).Methods(http.MethodGet)
 }

@@ -1,16 +1,19 @@
 package handlers
 
 import (
+	"encoding/json"
 	"io/ioutil"
 	"net/http"
 	"server/errors"
 	"server/objects"
 	"server/store"
+	"time"
 )
 
 // IPostHandler is implement all the handlers
 type IPostHandler interface {
 	Get(w http.ResponseWriter, r *http.Request)
+	RedditList(w http.ResponseWriter, r *http.Request)
 	List(w http.ResponseWriter, r *http.Request)
 	Create(w http.ResponseWriter, r *http.Request)
 	// UpdateDetails(w http.ResponseWriter, r *http.Request)
@@ -43,8 +46,6 @@ func (h *handler) List(w http.ResponseWriter, r *http.Request) {
 	values := r.URL.Query()
 	// after
 	after := values.Get("after")
-	// name
-	name := values.Get("name")
 	// limit
 	limit, err := IntFromString(w, values.Get("limit"))
 	if err != nil {
@@ -54,13 +55,59 @@ func (h *handler) List(w http.ResponseWriter, r *http.Request) {
 	list, err := h.store.List(r.Context(), &objects.ListRequest{
 		Limit: limit,
 		After: after,
-		Name:  name,
 	})
 	if err != nil {
 		WriteError(w, err)
 		return
 	}
 	WriteResponse(w, &objects.PostResponseWrapper{Posts: list})
+}
+
+func (h *handler) RedditList(w http.ResponseWriter, r *http.Request) {
+	var resList []*objects.Post
+
+	var httpClient = &http.Client{
+		Timeout: time.Second * 10,
+	}
+
+	req, err := http.NewRequest("GET", "https://www.reddit.com/r/redditdev/top.json", nil)
+	req.Header.Set("User-Agent", "reddit-top/1.0")
+
+	res, err := httpClient.Do(req)
+
+	// check for response error
+	if err != nil {
+		WriteError(w, errors.ErrBadRequest)
+		return
+	}
+
+	data, _ := ioutil.ReadAll(res.Body)
+
+	// close response body
+	defer res.Body.Close()
+
+	type response struct {
+		Data struct {
+			Children []struct {
+				Data objects.Post
+			} `json:"children"`
+		} `json:"data"`
+	}
+
+	var redditData response
+
+	jsonErr := json.Unmarshal(data, &redditData)
+	if jsonErr != nil {
+		WriteError(w, jsonErr)
+	}
+
+	// for {key}, {value} := range {list}
+	for _, PostWrapper := range redditData.Data.Children {
+		post := PostWrapper.Data
+		resList = append(resList, &post)
+	}
+
+	WriteResponse(w, &objects.PostResponseWrapper{Posts: resList})
 }
 
 func (h *handler) Create(w http.ResponseWriter, r *http.Request) {

@@ -60,9 +60,6 @@ func (p *pg) List(ctx context.Context, in *objects.ListRequest) ([]*objects.Post
 	if in.After != "" {
 		query = query.Where("id > ?", in.After)
 	}
-	if in.Name != "" {
-		query = query.Where("name ilike ?", "%"+in.Name+"%")
-	}
 	list := make([]*objects.Post, 0, in.Limit)
 	err := query.Order("id").Find(&list).Error
 	return list, err
@@ -73,8 +70,6 @@ func (p *pg) Create(ctx context.Context, in *objects.CreateRequest) error {
 		return errors.ErrObjectIsRequired
 	}
 	in.Post.ID = GenerateUniqueID()
-	// in.Post.Author = objects.Post.Author
-	// in.Post.CreatedOn = p.db.NowFunc()
 	return p.db.WithContext(ctx).
 		Create(in.Post).
 		Error
