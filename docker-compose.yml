@@ -33,9 +33,9 @@ services:
 
   frontend-app:
     container_name: reddit-top-ui
-    build: ../frontend
+    build: ../top-reddit-frontend
     ports:
       - 3000:3006
     restart: on-failure
     volumes:
-      - ../frontend:/app
+      - ../top-reddit-frontend:/app
